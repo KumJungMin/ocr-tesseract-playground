@@ -1,20 +1,28 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue'
+import VideoCapture from './components/VideoCapture.vue'
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="app">
+    <h1>비디오 캡처</h1>
+    <VideoCapture />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
