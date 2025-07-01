@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:App"
+      name = "App">
+      <FileRef
+         location = "group:Assets.xcassets">
+      </FileRef>
+      <Group
+         location = "group:Base.lproj"
+         name = "Base.lproj">
+         <FileRef
+            location = "group:LaunchScreen.storyboard">
+         </FileRef>
+         <FileRef
+            location = "group:Main.storyboard">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:config.xml">
+      </FileRef>
+      <Group
+         location = "group:public"
+         name = "public">
+         <FileRef
+            location = "group:index.html">
+         </FileRef>
+         <FileRef
+            location = "group:cordova.js">
+         </FileRef>
+         <FileRef
+            location = "group:vite.svg">
+         </FileRef>
+         <FileRef
+            location = "group:cordova_plugins.js">
+         </FileRef>
+         <Group
+            location = "group:assets"
+            name = "assets">
+            <FileRef
+               location = "group:index-CNztF77L.css">
+            </FileRef>
+            <FileRef
+               location = "group:index-BL2zlN3l.js">
+            </FileRef>
+         </Group>
+      </Group>
+      <FileRef
+         location = "group:capacitor.config.json">
+      </FileRef>
+      <FileRef
+         location = "group:AppDelegate.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Info.plist">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:App.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+</Workspace>
