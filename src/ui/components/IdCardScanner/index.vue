@@ -61,10 +61,11 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted, watch } from 'vue'
-import { useCamera } from '../composables/useCamera'
-import { useOCR } from '../composables/useOCR'
-import { useMasking } from '../composables/useMasking'
-import { useAutoCapture } from '../composables/useAutoCapture'
+import { useCamera } from '@/core/composables/useCamera'
+import { useOCR } from '@/core/composables/useOCR'
+import { useMasking } from '@/core/composables/useMasking'
+import { useAutoCapture } from '@/core/composables/useAutoCapture'
+import type { Word } from '@/core/composables/useMasking'
 
 const videoRef = ref<HTMLVideoElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -239,7 +240,7 @@ async function hasMaskTarget(canvas: HTMLCanvasElement): Promise<boolean> {
   await initializeOCR();
   const ocrData = await recognize(canvas);
   const words = extractWords(ocrData.data.blocks);
-  const docType = detectDocumentType(words.map(w => w.text).join(' '));
+  const docType = detectDocumentType(words.map((w: Word) => w.text).join(' '));
   if (!docType) return false;
   const patterns = getApplicablePatterns(docType);
   const regions = findMaskRegions(words, patterns);

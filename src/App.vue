@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import VideoCapture from './components/VideoCapture.vue'
+import IdCardScanner from './ui/components/IdCardScanner/index.vue'
 </script>
 
 <template>
   <div class="app">
     <h1>비디오 캡처3</h1>
-    <VideoCapture />
+    <IdCardScanner />
   </div>
 </template>
 

@@ -8,7 +8,7 @@ export function useAutoCapture(
   onCapture: (image: HTMLCanvasElement) => void,
   options: AutoCaptureOptions = {}
 ) {
-  const { 
+  const {
     detectionInterval = 150, 
     consecutiveFrames = 3,
   } = options;
@@ -20,7 +20,7 @@ export function useAutoCapture(
 
   let intervalId: number | null = null;
   let consecutiveDetections = 0;
-  
+
   const startDetect = () => {
     if (worker.value) return;
 
@@ -43,10 +43,10 @@ export function useAutoCapture(
 
         if (payload.found) {
           consecutiveDetections++;
-          if (consecutiveDetections >= consecutiveFrames) {
+        if (consecutiveDetections >= consecutiveFrames) {
             captureAndStop();
-          }
-        } else {
+        }
+      } else {
           consecutiveDetections = 0;
         }
       }
@@ -121,4 +121,4 @@ export function useAutoCapture(
     startDetect,
     stopDetect
   };
-}
+} 
