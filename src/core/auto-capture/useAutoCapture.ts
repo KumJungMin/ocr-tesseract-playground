@@ -1,6 +1,6 @@
 import { ref, onUnmounted, shallowRef } from 'vue';
 import type { Ref } from 'vue';
-import type { AutoCaptureOptions } from '@/core/libs/opencv/idCardDetector';
+import type { AutoCaptureOptions } from '@/core/vision/opencv/idCardDetector';
 import { defaultDetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
 import type { DetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
 import { createDetectionCanvas } from '@/core/auto-capture/utils/canvas';

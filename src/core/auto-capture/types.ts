@@ -1,4 +1,4 @@
-import type { AutoCaptureOptions } from '@/core/libs/opencv/idCardDetector';
+import type { AutoCaptureOptions } from '@/core/vision/opencv/idCardDetector';
 
 export enum AutoCaptureStatus {
   Idle = 'idle',

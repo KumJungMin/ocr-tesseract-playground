@@ -1,5 +1,5 @@
 import cv from 'opencv-ts';  
-import { IdCardDetector } from '@/core/libs/opencv/idCardDetector';
+import { IdCardDetector } from '@/core/vision/opencv/idCardDetector';
 
 let detector: IdCardDetector | null = null;
 
