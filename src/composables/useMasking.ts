@@ -165,7 +165,7 @@ export function useMasking() {
     ctx.fillRect(region.x, region.y, region.w, region.h)
   }
 
-  return { applyMask }
+  return { applyMask, detectDocumentType, getApplicablePatterns, findMaskRegions, extractWords }
 } 
 
 // 1) OCR 데이터에서 단어(flat) 추출
