@@ -99,20 +99,64 @@ const {
   }
 );
 
+
+const isDetecting = computed(() => status.value === AutoCaptureStatus.Detecting)
+
+// 자동 감지 상태와 타겟 감지 상태 변경 시 프레임 색상 업데이트
+watch([status, isTargetDetected], ([newStatus, detected]) => {
+  const detecting = newStatus === AutoCaptureStatus.Detecting;
+  frameColor.value = (detecting && detected) ? 'green' : 'red';
+  drawFrame(true);
+});
+
+watch(isStreaming, (newVal) => {
+  if (newVal && videoRef.value) drawFrame(true)
+  if (!newVal) stopDetect();
+  
+});
+
+onUnmounted(() => {
+  stopCameraAndDetection();
+  terminateOCR();
+});
+
+/**
+ * 이미지를 처리하여 OCR 인식 및 마스킹을 수행합니다.
+ * 
+ * 이 함수는 캡처된 이미지나 업로드된 이미지를 받아서 OCR 인식을 통해 텍스트를 추출하고,
+ * 민감한 개인정보를 자동으로 감지하여 마스킹을 적용합니다.
+ * 
+ * 처리 과정:
+ * 1. Canvas에 소스 이미지 그리기
+ * 2. 원본 이미지를 미리보기용으로 저장
+ * 3. OCR 엔진 초기화 및 텍스트 인식 수행
+ * 4. 민감한 정보 감지 및 마스킹 적용
+ * 5. 마스킹된 이미지를 미리보기용으로 저장
+ * 6. 성공 시 프레임 색상을 녹색으로 변경하고 미리보기 표시
+ * 7. 실패 시 프레임 색상을 빨간색으로 변경하고 미리보기 숨김
+ * 
+ * @param source - 처리할 이미지 소스 (Canvas 또는 Image 엘리먼트)
+ * @returns Promise<void> - 이미지 처리 완료
+ */
 const processImage = async (source: HTMLCanvasElement | HTMLImageElement) => {
   if (isProcessing.value || !canvasRef.value) return;
   isProcessing.value = true;
   maskedImage.value = null;
   const canvas = canvasRef.value;
   const ctx = canvas.getContext('2d');
+
   if (!ctx) {
     isProcessing.value = false;
     return;
   }
+
+  // 소스 이미지를 Canvas에 그리기
   canvas.width = source instanceof HTMLCanvasElement ? source.width : source.naturalWidth;
   canvas.height = source instanceof HTMLCanvasElement ? source.height : source.naturalHeight;
   ctx.drawImage(source, 0, 0);
   capturedImage.value = canvas.toDataURL('image/png');
+
+  // OCR 인식 및 마스킹 적용
   try {
     await initializeOCR();
     const ocrData = await recognize(canvas);
@@ -120,6 +164,7 @@ const processImage = async (source: HTMLCanvasElement | HTMLImageElement) => {
     maskedImage.value = canvas.toDataURL('image/png');
     frameColor.value = 'green';
     showPreview.value = true;
+
     if (videoRef.value && isStreaming.value) {
       videoRef.value.pause();
       showMaskedOverlay.value = true;
@@ -133,18 +178,22 @@ const processImage = async (source: HTMLCanvasElement | HTMLImageElement) => {
   }
 };
 
+
 const captureImageManually = () => {
   if (!videoRef.value || !isStreaming.value) return;
+
   const tempCanvas = document.createElement('canvas');
   tempCanvas.width = videoRef.value.videoWidth;
   tempCanvas.height = videoRef.value.videoHeight;
   tempCanvas.getContext('2d')?.drawImage(videoRef.value, 0, 0);
+
   processImage(tempCanvas);
 };
 
 const handleFileUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
+
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
@@ -153,6 +202,7 @@ const handleFileUpload = (event: Event) => {
     };
     img.src = e.target?.result as string;
   };
+
   reader.readAsDataURL(file);
   if (fileInput.value) fileInput.value.value = '';
 };
@@ -186,38 +236,19 @@ const stopCameraAndDetection = () => {
   stopDetect();
 };
 
-watch(status, (newStatus) => {
-  const detecting = newStatus === AutoCaptureStatus.Detecting;
-  frameColor.value = (detecting && isTargetDetected.value) ? 'green' : 'red';
-  drawFrame(true)
-})
-
-watch(isTargetDetected, (detected) => {
-  frameColor.value = detected ? 'green' : 'red'
-  drawFrame(true)
-})
-
-watch(isStreaming, (newVal) => {
-  if (newVal && videoRef.value) drawFrame(true)
-  if (!newVal) {
-    stopDetect();
-  }
-});
-
-onUnmounted(() => {
-  stopCameraAndDetection();
-  terminateOCR();
-});
 
 function drawFrame(visible: boolean) {
   const canvas = frameCanvasRef.value
   const video = videoRef.value
+
   if (!canvas || !video) return
   if (video.videoWidth === 0 || video.videoHeight === 0) return
+  
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
   const ctx = canvas.getContext('2d')
   if (!ctx) return
+
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   if (visible) {
     ctx.strokeStyle = frameColor.value === 'green' ? 'lime' : '#ff3b3b';
@@ -237,8 +268,6 @@ function drawFrame(visible: boolean) {
     ctx.arcTo(0, 0, radius, 0, radius);
     ctx.closePath();
     ctx.stroke();
-
-    console.log('drawFrame', canvas.width, canvas.height)
   }
 }
 
@@ -254,7 +283,6 @@ async function hasMaskTarget(canvas: HTMLCanvasElement): Promise<boolean> {
   return regions.length > 0;
 }
 
-const isDetecting = computed(() => status.value === AutoCaptureStatus.Detecting)
 </script>
 
 <style scoped>
