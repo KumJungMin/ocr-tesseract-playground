@@ -1,17 +1,10 @@
 import { ref, onUnmounted, shallowRef } from 'vue';
 import type { Ref } from 'vue';
-import type { AutoCaptureOptions } from '../libs/opencv/idCardDetector';
-import { defaultDetectionWorkerFactory } from '@/core/workers/detectionWorkerFactory';
-import type { DetectionWorkerFactory } from '@/core/workers/detectionWorkerFactory';
+import type { AutoCaptureOptions } from '@/core/libs/opencv/idCardDetector';
+import { defaultDetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
+import type { DetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
 import { createDetectionCanvas } from '@/core/utils/canvas';
-
-export enum AutoCaptureStatus {
-  Idle = 'idle',
-  Initializing = 'initializing',
-  Detecting = 'detecting',
-  TargetFound = 'target-found',
-  Error = 'error',
-}
+import { AutoCaptureStatus } from '@/core/auto-capture/types';
 
 export function useAutoCapture(
   videoRef: Ref<HTMLVideoElement | null>,

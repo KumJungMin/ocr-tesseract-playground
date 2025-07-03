@@ -1,4 +1,4 @@
-import DetectionWorker from '@/core/libs/opencv/workers/detection.worker?worker';
+import DetectionWorker from '@/core/auto-capture/workers/detection.worker?worker';
 
 export type DetectionWorkerFactory = () => Worker;
 

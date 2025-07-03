@@ -64,9 +64,9 @@ import { ref, onUnmounted, watch, computed } from 'vue'
 import { useCamera } from '@/core/composables/useCamera'
 import { useOCR } from '@/core/composables/useOCR'
 import { useMasking } from '@/core/masking/useMasking'
-import { useAutoCapture } from '@/core/composables/useAutoCapture'
+import { useAutoCapture } from '@/core/auto-capture/useAutoCapture'
+import { AutoCaptureStatus } from '@/core/auto-capture/types'
 import type { Word } from '@/core/masking/types'
-import { AutoCaptureStatus } from '@/core/composables/useAutoCapture'
 
 const videoRef = ref<HTMLVideoElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
