@@ -1,13 +1,7 @@
 import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
-import { defaultGetUserMedia, type GetUserMediaFn } from '@/core/services/mediaService'
-
-export enum CameraStatus {
-  Idle = 'idle',
-  Starting = 'starting',
-  Streaming = 'streaming',
-  Error = 'error',
-}
+import { defaultGetUserMedia, type GetUserMediaFn } from '@/core/camera/services/mediaService'
+import { CameraStatus } from '@/core/camera/types'
 
 export function useCamera(
   videoRef: Ref<HTMLVideoElement | null>,
