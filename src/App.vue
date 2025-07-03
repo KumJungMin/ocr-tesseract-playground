@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 import VideoCapture from './components/VideoCapture.vue'
 </script>
 
 <template>
   <div class="app">
-    <h1>비디오 캡처</h1>
+    <h1>비디오 캡처3</h1>
     <VideoCapture />
   </div>
 </template>
 
 <style scoped>
 .app {
-  max-width: 1200px;
+  max-width: 700px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
