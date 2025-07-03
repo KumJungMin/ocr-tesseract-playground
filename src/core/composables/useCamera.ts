@@ -1,31 +1,46 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
+import { defaultGetUserMedia, type GetUserMediaFn } from '@/core/services/mediaService'
 
-export function useCamera(videoRef: Ref<HTMLVideoElement | null>) {
-  const isStreaming = ref(false)
-  let stream: MediaStream | null = null
+export enum CameraStatus {
+  Idle = 'idle',
+  Starting = 'starting',
+  Streaming = 'streaming',
+  Error = 'error',
+}
 
-  async function start() {
+export function useCamera(
+  videoRef: Ref<HTMLVideoElement | null>,
+  getUserMedia: GetUserMediaFn = defaultGetUserMedia,
+) {
+  const status = ref<CameraStatus>(CameraStatus.Idle)
+  const error = ref<Error | null>(null)
+  const streamRef = ref<MediaStream | null>(null)
+
+  async function start(constraints: MediaStreamConstraints = { video: { facingMode: { ideal: 'environment' } }, audio: false }) {
+    if (status.value === CameraStatus.Streaming || status.value === CameraStatus.Starting) return
+    status.value = CameraStatus.Starting
+    error.value = null
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
-        audio: false,
-      })
+      const stream = await getUserMedia(constraints)
+      streamRef.value = stream
 
       if (videoRef.value) {
         videoRef.value.srcObject = stream
         await videoRef.value.play()
-        isStreaming.value = true
       }
-    } catch (err) {
+
+      status.value = CameraStatus.Streaming
+    } catch (err: any) {
+      error.value = err instanceof Error ? err : new Error('Unknown camera error')
+      status.value = CameraStatus.Error
       console.error('카메라 접근 실패:', err)
-      isStreaming.value = false
     }
   }
 
   function stop() {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop())
+    if (streamRef.value) {
+      streamRef.value.getTracks().forEach(track => track.stop())
     }
 
     if (videoRef.value) {
@@ -33,12 +48,14 @@ export function useCamera(videoRef: Ref<HTMLVideoElement | null>) {
       videoRef.value.srcObject = null
     }
 
-    isStreaming.value = false
-    stream = null
+    status.value = CameraStatus.Idle
+    streamRef.value = null
   }
 
   return {
-    isStreaming,
+    status,
+    isStreaming: computed(() => status.value === CameraStatus.Streaming),
+    error,
     start,
     stop,
   }
