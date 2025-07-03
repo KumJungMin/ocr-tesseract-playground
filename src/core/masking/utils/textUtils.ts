@@ -1,5 +1,5 @@
 import type { Word } from '../types';
-import type { TesseractResult } from '@/core/composables/useOCR';
+import type { TesseractResult } from '@/core/ocr/useOCR';
 
 /**
  * OCR 데이터에서 단어(flat) 배열 추출

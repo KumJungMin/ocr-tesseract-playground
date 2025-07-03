@@ -3,7 +3,7 @@ import type { Ref } from 'vue';
 import type { AutoCaptureOptions } from '@/core/libs/opencv/idCardDetector';
 import { defaultDetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
 import type { DetectionWorkerFactory } from '@/core/auto-capture/workers/detectionWorkerFactory';
-import { createDetectionCanvas } from '@/core/utils/canvas';
+import { createDetectionCanvas } from '@/core/auto-capture/utils/canvas';
 import { AutoCaptureStatus } from '@/core/auto-capture/types';
 
 export function useAutoCapture(

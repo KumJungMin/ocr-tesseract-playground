@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted, watch, computed } from 'vue'
 import { useCamera } from '@/core/camera/useCamera'
-import { useOCR } from '@/core/composables/useOCR'
+import { useOCR } from '@/core/ocr/useOCR'
 import { useMasking } from '@/core/masking/useMasking'
 import { useAutoCapture } from '@/core/auto-capture/useAutoCapture'
 import { AutoCaptureStatus } from '@/core/auto-capture/types'

@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { TesseractResult } from '@/core/composables/useOCR';
+import type { TesseractResult } from '@/core/ocr/useOCR';
 import type { MaskingStatus, Word } from './types';
 import { detectDocumentType } from './utils/documentDetector';
 import { getApplicablePatterns } from './patterns';
