@@ -57,7 +57,6 @@ export function useAutoCapture(
     };
 
     // Worker 초기화 메시지 전송
-    // public 폴더에 opencv.js 파일이 있어야 함
     worker.value.postMessage({
       type: 'init',
       payload: { options }
