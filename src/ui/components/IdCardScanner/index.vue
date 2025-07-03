@@ -60,12 +60,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, watch } from 'vue'
+import { ref, onUnmounted, watch, computed } from 'vue'
 import { useCamera } from '@/core/composables/useCamera'
 import { useOCR } from '@/core/composables/useOCR'
 import { useMasking } from '@/core/composables/useMasking'
 import { useAutoCapture } from '@/core/composables/useAutoCapture'
 import type { Word } from '@/core/composables/useMasking'
+import { AutoCaptureStatus } from '@/core/composables/useAutoCapture'
 
 const videoRef = ref<HTMLVideoElement | null>(null)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -84,7 +85,7 @@ const { initialize: initializeOCR, terminate: terminateOCR, recognize } = useOCR
 const { applyMask, detectDocumentType, getApplicablePatterns, findMaskRegions, extractWords } = useMasking()
 
 const {
-  detecting: isDetecting,
+  status,
   isTargetDetected,
   startDetect,
   stopDetect,
@@ -185,17 +186,23 @@ const stopCameraAndDetection = () => {
   stopDetect();
 };
 
+watch(status, (newStatus) => {
+  const detecting = newStatus === AutoCaptureStatus.Detecting;
+  frameColor.value = (detecting && isTargetDetected.value) ? 'green' : 'red';
+  drawFrame(true)
+})
+
+watch(isTargetDetected, (detected) => {
+  frameColor.value = detected ? 'green' : 'red'
+  drawFrame(true)
+})
+
 watch(isStreaming, (newVal) => {
   if (newVal && videoRef.value) drawFrame(true)
   if (!newVal) {
     stopDetect();
   }
 });
-
-watch(isTargetDetected, (detected) => {
-  frameColor.value = detected ? 'green' : 'red'
-  drawFrame(true)
-})
 
 onUnmounted(() => {
   stopCameraAndDetection();
@@ -246,6 +253,8 @@ async function hasMaskTarget(canvas: HTMLCanvasElement): Promise<boolean> {
   const regions = findMaskRegions(words, patterns);
   return regions.length > 0;
 }
+
+const isDetecting = computed(() => status.value === AutoCaptureStatus.Detecting)
 </script>
 
 <style scoped>

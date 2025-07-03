@@ -1,19 +1,30 @@
 import { ref, onUnmounted, shallowRef } from 'vue';
 import type { Ref } from 'vue';
 import type { AutoCaptureOptions } from '../libs/opencv/idCardDetector';
-import DetectionWorker from '../libs/opencv/workers/detection.worker?worker';
+import { defaultDetectionWorkerFactory } from '@/core/workers/detectionWorkerFactory';
+import type { DetectionWorkerFactory } from '@/core/workers/detectionWorkerFactory';
+import { createDetectionCanvas } from '@/core/utils/canvas';
+
+export enum AutoCaptureStatus {
+  Idle = 'idle',
+  Initializing = 'initializing',
+  Detecting = 'detecting',
+  TargetFound = 'target-found',
+  Error = 'error',
+}
 
 export function useAutoCapture(
   videoRef: Ref<HTMLVideoElement | null>,
   onCapture: (image: HTMLCanvasElement) => void,
-  options: AutoCaptureOptions = {}
+  options: AutoCaptureOptions = {},
+  createWorker: DetectionWorkerFactory = defaultDetectionWorkerFactory,
 ) {
   const {
     detectionInterval = 150, 
     consecutiveFrames = 3,
   } = options;
 
-  const detecting = ref(false);
+  const status = ref<AutoCaptureStatus>(AutoCaptureStatus.Idle);
   const isProcessing = ref(false);
   const isTargetDetected = ref(false);
   const worker = shallowRef<Worker | null>(null);
@@ -24,13 +35,13 @@ export function useAutoCapture(
   const startDetect = () => {
     if (worker.value) return;
 
-    worker.value = new DetectionWorker();
+    worker.value = createWorker();
 
     worker.value.onmessage = (event: MessageEvent) => {
       const { type, payload } = event.data;
 
       if (type === 'init-done') {
-        detecting.value = true;
+        status.value = AutoCaptureStatus.Detecting;
         isTargetDetected.value = false;
         consecutiveDetections = 0;
         // Worker가 준비된 후 감지 인터벌 시작
@@ -69,13 +80,8 @@ export function useAutoCapture(
     isProcessing.value = true;
 
     // 성능을 위해 저해상도 캔버스에서 ImageData 추출
-    const tempCanvas = document.createElement('canvas');
-    const aspectRatio = video.videoWidth / video.videoHeight;
-    tempCanvas.width = 480;
-    tempCanvas.height = 480 / aspectRatio;
-    
+    const tempCanvas = createDetectionCanvas(video);
     const ctx = tempCanvas.getContext('2d', { willReadFrequently: true })!;
-    ctx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
     const imageData = ctx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
 
     // 이미지 데이터를 Worker로 전송
@@ -106,7 +112,7 @@ export function useAutoCapture(
     worker.value?.terminate();
     worker.value = null;
 
-    detecting.value = false;
+    status.value = AutoCaptureStatus.Idle;
     isProcessing.value = false;
     isTargetDetected.value = false;
     consecutiveDetections = 0;
@@ -115,7 +121,7 @@ export function useAutoCapture(
   onUnmounted(stopDetect);
 
   return {
-    detecting,
+    status,
     isProcessing,
     isTargetDetected,
     startDetect,
